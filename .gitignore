@@ -1,0 +1,37 @@
+# Secrets & Credentials
+.env
+*.env
+.env.*
+credentials/
+secrets/
+
+# SSL Certificates
+letsencrypt/
+acme.json
+
+# Service Data
+n8n_data/
+postgres_data/
+redis_data/
+nextcloud_data/
+ollama_data/
+qdrant_data/
+*.sqlite
+*.db
+
+# Backups
+*.tar.gz
+*.backup
+backups/
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary
+tmp/
+temp/
