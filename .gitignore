@@ -35,3 +35,4 @@ Thumbs.db
 # Temporary
 tmp/
 temp/
+docker-compose.yml.backup-*
