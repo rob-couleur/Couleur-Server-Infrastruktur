@@ -151,6 +151,10 @@ services:
       - /mnt/data/services/ollama:/root/.ollama
     networks:
       - backend
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+
     # Optional: GPU support
     # deploy:
     #   resources:
