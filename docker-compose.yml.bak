@@ -255,3 +255,57 @@ services:
       
       # Service Port
       - "traefik.http.services.nextcloud.loadbalancer.server.port=80"
+
+  # ==========================================
+  # PLANE - Project Management
+  # ==========================================
+  plane-web:
+    image: makeplane/plane-frontend:latest
+    container_name: plane-web
+    restart: unless-stopped
+    environment:
+      - NEXT_PUBLIC_API_BASE_URL=https://${PLANE_DOMAIN}
+    networks:
+      - frontend
+      - backend
+    depends_on:
+      - plane-api
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.plane.rule=Host(`${PLANE_DOMAIN}`)"
+      - "traefik.http.routers.plane.entrypoints=websecure"
+      - "traefik.http.routers.plane.tls.certresolver=letsencrypt"
+      - "traefik.http.services.plane.loadbalancer.server.port=3000"
+
+  plane-api:
+    image: makeplane/plane-backend:latest
+    container_name: plane-api
+    restart: unless-stopped
+    environment:
+      - SECRET_KEY=${PLANE_SECRET_KEY}
+      - DATABASE_URL=postgresql://${PLANE_DB_USER}:${PLANE_DB_PASSWORD}@postgres:5432/${PLANE_DB_NAME}
+      - REDIS_URL=redis://redis:6379/1
+      - WEB_URL=https://${PLANE_DOMAIN}
+      - CORS_ALLOWED_ORIGINS=https://${PLANE_DOMAIN}
+    volumes:
+      - /mnt/data/services/plane:/data
+    networks:
+      - backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  plane-worker:
+    image: makeplane/plane-worker:latest
+    container_name: plane-worker
+    restart: unless-stopped
+    environment:
+      - SECRET_KEY=${PLANE_SECRET_KEY}
+      - DATABASE_URL=postgresql://${PLANE_DB_USER}:${PLANE_DB_PASSWORD}@postgres:5432/${PLANE_DB_NAME}
+      - REDIS_URL=redis://redis:6379/1
+    networks:
+      - backend
+    depends_on:
+      - plane-api

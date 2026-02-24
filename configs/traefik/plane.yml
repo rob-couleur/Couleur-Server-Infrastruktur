@@ -1,0 +1,15 @@
+http:
+  routers:
+    plane:
+      rule: "Host(`pm.couleur.agency`)"
+      entrypoints:
+        - websecure
+      tls:
+        certResolver: letsencrypt
+      service: plane
+
+  services:
+    plane:
+      loadBalancer:
+        servers:
+          - url: "http://172.20.0.20:80"
